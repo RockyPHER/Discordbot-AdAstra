@@ -7,11 +7,9 @@ using Discord.WebSocket;
 
 namespace DiscordBot
 {
-
     public class Program
     {
-
-        private DiscordSocketClient _client;
+        public DiscordSocketClient? _client;
         public static Task Main(String[] args) => new Program().MainAsync();
 
 
@@ -33,7 +31,8 @@ namespace DiscordBot
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
 
-            //event manager:
+
+            _client.ReactionAdded += ReactionAdded;
 
             await Task.Delay(-1);
 
@@ -47,6 +46,23 @@ namespace DiscordBot
 
         }
 
+
+        public async Task ReactionAdded(Cacheable<IUserMessage, ulong> userMsg, Cacheable<IMessageChannel, ulong> channelMsg, SocketReaction emoji){
+
+            ulong channelTest = 1154406126780157952;
+            var message = userMsg.GetOrDownloadAsync();
+            var channel = channelMsg.GetOrDownloadAsync();
+            if (emoji.UserId == _client.CurrentUser.Id) return;
+            if (channelMsg.Id != channelTest) return; 
+
+            var WriteMsg = _client.GetChannel(channelTest) as IMessageChannel;
+
+            await WriteMsg.SendMessageAsync("Reaction Detected");
+
+            Console.WriteLine($"---------------------\n{message.Result.Author.Username}: {message.Result.Content}");
+            return;
+
+        }
 
         
     }
