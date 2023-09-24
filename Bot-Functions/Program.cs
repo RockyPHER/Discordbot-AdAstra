@@ -49,15 +49,16 @@ namespace DiscordBot
 
         public async Task ReactionAdded(Cacheable<IUserMessage, ulong> userMsg, Cacheable<IMessageChannel, ulong> channelMsg, SocketReaction emoji){
 
-            ulong channelTest = 1154406126780157952;
+            ulong channelTest = 1136045626312896537;
+            ulong channelPost = 1154406126780157952;
             var message = userMsg.GetOrDownloadAsync();
             var channel = channelMsg.GetOrDownloadAsync();
             if (emoji.UserId == _client.CurrentUser.Id) return;
             if (channelMsg.Id != channelTest) return; 
 
-            var WriteMsg = _client.GetChannel(channelTest) as IMessageChannel;
+            var WriteMsg = _client.GetChannel(channelPost) as IMessageChannel;
 
-            await WriteMsg.SendMessageAsync("Reaction Detected");
+            await WriteMsg.SendMessageAsync($"**Mensagem:**\n'{message.Result.Content}'\n\n**de:**\n {message.Result.Author.Username}\n\n**Reações:**\n {message.Result.Reactions.Count}");
 
             Console.WriteLine($"---------------------\n{message.Result.Author.Username}: {message.Result.Content}");
             return;
