@@ -1,6 +1,10 @@
 ﻿
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Net.WebSockets;
+using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography.X509Certificates;
 using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
@@ -10,6 +14,7 @@ namespace DiscordBot
     public class Program
     {
         public DiscordSocketClient? _client;
+
         public static Task Main(String[] args) => new Program().MainAsync();
 
 
@@ -38,6 +43,8 @@ namespace DiscordBot
 
         }
 
+
+
         private Task Log(LogMessage msg)
         {
 
@@ -55,12 +62,33 @@ namespace DiscordBot
             var channel = channelMsg.GetOrDownloadAsync();
             if (emoji.UserId == _client.CurrentUser.Id) return;
             if (channelMsg.Id != channelTest) return; 
-
+            // if (emoji.Emote.Name != )
+            /* TODO: 
+            - Add support to images;
+            - Add an emoji identifier;
+            */
             var WriteMsg = _client.GetChannel(channelPost) as IMessageChannel;
+            
+            var _embed = new EmbedBuilder{
+    
+                Author = new EmbedAuthorBuilder{
 
-            await WriteMsg.SendMessageAsync($"**Mensagem:**\n'{message.Result.Content}'\n\n**de:**\n {message.Result.Author.Username}\n\n**Reações:**\n {message.Result.Reactions.Count}");
+                    Name = message.Result.Author.Username,
+                    IconUrl = message.Result.Author.GetAvatarUrl(ImageFormat.Png)
 
-            Console.WriteLine($"---------------------\n{message.Result.Author.Username}: {message.Result.Content}");
+                },
+                Color = Color.DarkRed,
+                Timestamp = message.Result.Timestamp.LocalDateTime,
+
+            };
+
+            _embed.AddField("Nº Reactions:"+message.Result.Reactions.Count, message.Result.Content, inline: true);
+
+            await WriteMsg.SendMessageAsync(embed : _embed.Build());
+            Console.WriteLine(message.Result.Reactions.Values);
+
+            // await WriteMsg.SendMessageAsync($"**Author:** {message.Result.Author.Username}\n\n**Message:**\"{message.Result.Content}\"\n\n**Num.Reaction:** {message.Result.Reactions.Count}");
+
             return;
 
         }
