@@ -14,6 +14,7 @@ namespace DiscordBot
     public class Program
     {
         public DiscordSocketClient? _client;
+        public IEmote? _desiredEmote;
 
         public static Task Main(String[] args) => new Program().MainAsync();
 
@@ -56,12 +57,14 @@ namespace DiscordBot
 
         public async Task ReactionAdded(Cacheable<IUserMessage, ulong> userMsg, Cacheable<IMessageChannel, ulong> channelMsg, SocketReaction emoji){
 
+            var _desiredEmote = new Emoji("🤣");
             ulong channelTest = 1136045626312896537;
             ulong channelPost = 1154406126780157952;
             var message = userMsg.GetOrDownloadAsync();
             var channel = channelMsg.GetOrDownloadAsync();
             if (emoji.UserId == _client.CurrentUser.Id) return;
-            if (channelMsg.Id != channelTest) return; 
+            if (channelMsg.Id != channelTest) return;
+            if (emoji.Emote.Name != _desiredEmote.Name) return;
             // if (emoji.Emote.Name != )
             /* TODO: 
             - Add support to images;
@@ -79,10 +82,11 @@ namespace DiscordBot
                 },
                 Color = Color.DarkRed,
                 Timestamp = message.Result.Timestamp.LocalDateTime,
+                
 
             };
 
-            _embed.AddField("Nº Reactions:"+message.Result.Reactions.Count, message.Result.Content, inline: true);
+            _embed.AddField("# "+message.Result.Reactions.Count, message.Result.Content, inline: true);
 
             await WriteMsg.SendMessageAsync(embed : _embed.Build());
             Console.WriteLine(message.Result.Reactions.Values);
