@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
+using Microsoft.VisualBasic;
 
 namespace DiscordBot
 {
@@ -63,30 +64,41 @@ namespace DiscordBot
             var message = userMsg.GetOrDownloadAsync();
             var channel = channelMsg.GetOrDownloadAsync();
             if (emoji.UserId == _client.CurrentUser.Id) return;
-            if (channelMsg.Id != channelTest) return;
+            // if (channelMsg.Id != channelTest) return;
             if (emoji.Emote.Name != _desiredEmote.Name) return;
-            // if (emoji.Emote.Name != )
+            
+            var emojiCount = message.Result.Reactions.GetValueOrDefault<IEmote, ReactionMetadata>(_desiredEmote, default).ReactionCount;
+            var messageContent = message.Result.Content;
+            var authorName = message.Result.Author.Username;
+            var authorPfp = message.Result.Author.GetAvatarUrl(ImageFormat.Png);
+            var timeOfTheMessage = message.Result.Timestamp.LocalDateTime;
+            var idOfTheMessage = channel;
             /* TODO: 
             - Add support to images;
-            - Add an emoji identifier;
+            - Add a counter;
+            
+
             */
             var WriteMsg = _client.GetChannel(channelPost) as IMessageChannel;
             
             var _embed = new EmbedBuilder{
-    
+                
+                Title = "# 🤣"+emojiCount,
                 Author = new EmbedAuthorBuilder{
 
-                    Name = message.Result.Author.Username,
-                    IconUrl = message.Result.Author.GetAvatarUrl(ImageFormat.Png)
+                    Name = authorName,
+                    IconUrl = authorPfp
 
                 },
                 Color = Color.DarkRed,
-                Timestamp = message.Result.Timestamp.LocalDateTime,
+                Timestamp = timeOfTheMessage,
+                Description = messageContent
                 
+                // if (messageContent.)
 
             };
 
-            _embed.AddField("# "+message.Result.Reactions.Count, message.Result.Content, inline: true);
+            // _embed.AddField("# 🤣"+message.Result.Reactions.Count+, message.Result.Content, inline: true);
 
             await WriteMsg.SendMessageAsync(embed : _embed.Build());
             Console.WriteLine(message.Result.Reactions.Values);
