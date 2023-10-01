@@ -40,6 +40,7 @@ namespace DiscordBot
 
 
             _client.ReactionAdded += ReactionAdded;
+            _client.MessageReceived += UserCommand;
 
             await Task.Delay(-1);
 
@@ -55,6 +56,25 @@ namespace DiscordBot
 
         }
 
+        public async Task UserCommand(SocketMessage msg){
+            
+            var messageContent = msg.Content;
+            Random random = new Random();
+            int randomNumb = random.Next(0, 4);
+            String[] starText = new String[5]{"₊⊹", "⋆⭒˚", "⋆⁺₊⋆", "-࣭-⭑", "⊹˖"};
+            var channelId = msg.Channel.Id;
+
+            if (messageContent != "*estrelas") return;
+
+            var editChannel = _client?.GetChannel(channelId) as IGuildChannel;
+
+            var channelName = editChannel?.Name;
+            var newName = $"{channelName}{starText[randomNumb]}";
+
+
+            await editChannel.ModifyAsync(properties => properties.Name = newName);
+
+        }
 
         public async Task ReactionAdded(Cacheable<IUserMessage, ulong> userMsg, Cacheable<IMessageChannel, ulong> channelMsg, SocketReaction emoji){
 
@@ -69,13 +89,14 @@ namespace DiscordBot
             
             var emojiCount = message.Result.Reactions.GetValueOrDefault<IEmote, ReactionMetadata>(_desiredEmote, default).ReactionCount;
             var messageContent = message.Result.Content;
+            var messageImage = message.Result;
             var authorName = message.Result.Author.Username;
             var authorPfp = message.Result.Author.GetAvatarUrl(ImageFormat.Png);
             var timeOfTheMessage = message.Result.Timestamp.LocalDateTime;
             var idOfTheMessage = channel;
             /* TODO: 
             - Add support to images;
-            - Add a counter;
+            - Add Costum Phrases
             
 
             */
@@ -94,7 +115,7 @@ namespace DiscordBot
                 Timestamp = timeOfTheMessage,
                 Description = messageContent
                 
-                // if (messageContent.)
+            
 
             };
 
